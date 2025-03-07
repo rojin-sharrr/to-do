@@ -55,7 +55,6 @@ const readOneTodo =  async (req, res) => {
         res.status(200).json(task)
     }else{
         res.status(404);
-        throw new error('Task not found; invalid task id')
     }   
 }
 
@@ -82,7 +81,6 @@ const editOneTodo =  async (req, res) => {
 
     }else{
         res.status(404);
-        throw new error('Task not found')
     }
 }
 
@@ -101,8 +99,7 @@ const deleteTodo =  async (req, res) => {
         await todo.deleteOne({_id: taskId})
         res.status(200).json(`Task '${task.title}' deleted succesfully `)
     }else{
-        res.status(404)
-        throw new error('Task not found')
+        res.status(404);
     }
 }
 
