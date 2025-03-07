@@ -16,7 +16,6 @@ const validateTodo = (req, res, next) => {
     if (completed !== undefined && completed != "true" && completed != "false"  ) {
         errors.push("Completed: must be a boolean value (true or false).");
     }
-    console.log(typeof completed);
 
     if (errors.length > 0){
         return res.status(400).json({errors})

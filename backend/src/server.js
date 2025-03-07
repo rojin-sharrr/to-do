@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js"
 const PORT = process.env.PORT || 8000;  // Fallback to port 8000 if port not defined.
 import todoRoutes from './routes/todoRoutes.js';
+import errorHandler from './middleware/errorHandler.js';
 
 dotenv.config({ path: '../.env' });
 
@@ -23,6 +24,9 @@ app.get('/', (req, res) => {
 
 // todo routes
 app.use('/api/', todoRoutes)
+
+// Global Error Handler
+app.use(errorHandler);
 
 
 app.listen(PORT, ()=> console.log(`Server running on port: ${PORT}`) )

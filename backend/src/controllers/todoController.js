@@ -1,4 +1,5 @@
 import todo from "../models/Todo.js";
+import mongoose from "mongoose";
 
 // @desc  :   Create a new todo item
 // @route :   POST /api/maketodo
@@ -46,17 +47,20 @@ const readTodo =  async (req, res) => {
 // @desc  :   Read one todo's in the record
 // @route :   GET /api/readtodo/:id
 // @access:   Public
-const readOneTodo =  async (req, res) => {
-    // res.send('readTodo controller hit after beign routed to /api/readtodo')
+const readOneTodo =  async (req, res, next) => {
     const taskId = req.params.id;
-    const task = await todo.findById(taskId)
 
-    if(task){
-        res.status(200).json(task)
-    }else{
-        res.status(404);
-    }   
+    try {
+       const task = await todo.findById(taskId);
+       res.status(200).json(task);
+    } catch (error) {
+        next(error);
+    }
+    
 }
+    
+    
+    
 
 
 
@@ -64,24 +68,28 @@ const readOneTodo =  async (req, res) => {
 // @desc  :   Edit one todo's in the record
 // @route :   PUT /api/readtodo/:id
 // @access:   Public
-const editOneTodo =  async (req, res) => {
+const editOneTodo =  async (req, res, next) => {
     // res.send('readTodo controller hit after beign routed to /api/readtodo')
     const taskId = req.params.id;
-    const taskBody = req.body 
+    const taskBody = req.body;
 
-    // Edit the task that has been provided
-    const task = await todo.findById(taskId)
-    if(task){
-        task.title = taskBody.title? taskBody.title : task.title;
-        task.description = taskBody.description? taskBody.description: task.description
-        task.completed = taskBody.completed? taskBody.completed: task.completed
-        
-        const updatedTodo = await task.save();
-        res.status(200).json(updatedTodo);
+    try {
+        // Edit the task that has been provided
+        const task = await todo.findById(taskId);
+        if(task){
+            task.title = taskBody.title? taskBody.title : task.title;
+            task.description = taskBody.description? taskBody.description: task.description
+            task.completed = taskBody.completed? taskBody.completed: task.completed
+            
+            const updatedTodo = await task.save();
+            res.status(200).json(updatedTodo);
+    
+        }
 
-    }else{
-        res.status(404);
+    } catch (error) {
+        next(error)
     }
+
 }
 
 
