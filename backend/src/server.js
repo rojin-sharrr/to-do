@@ -13,8 +13,6 @@ const startApp = async () => {
 
     //Connect to postgresSQL using typeORM
     const abc =  await connectDB();     
-    console.log(abc);
-    console.log(process.env.PORT)
    
     // Server starts from here
     const app = express();
