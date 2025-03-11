@@ -1,18 +1,21 @@
-import todo from "../models/Todo.js";
-import mongoose from "mongoose";
+//import todo from "../models/Todo.js";
+import { todo } from "../Entities/todo.js";
+import todoRepository from "../Repositories/todo.repository.js";
 
 // @desc  :   Create a new todo item
-// @route :   POST /api/maketodo
+// @route :   POST /api/maketodo             
 // @access:   Public
 const createTodo =  async (req, res) => {
     console.log('Controller is being hit')
     const {title, description, completed} = req.body;
 
-    const newTask = await todo.create({
+    const newTask = await todoRepository.create({
         title,
         description,
         completed
     });
+
+    await todoRepository.save(newTask);
 
     // Validating succesful todo creation
     if (newTask){
@@ -38,7 +41,7 @@ const createTodo =  async (req, res) => {
 // @access:   Public
 const readTodo =  async (req, res) => {
     // res.send('readTodo controller hit after beign routed to /api/readtodo')
-    const todos = await todo.find({});
+    const todos = await todoRepository.find();
     res.status(200).json(todos);
 }
 
@@ -51,8 +54,11 @@ const readOneTodo =  async (req, res, next) => {
     const taskId = req.params.id;
 
     try {
-       const task = await todo.findById(taskId);
+       const task = await todoRepository.findOne({
+        where: { id: taskId}
+       })
        res.status(200).json(task);
+
     } catch (error) {
         next(error);
     }
@@ -72,16 +78,23 @@ const editOneTodo =  async (req, res, next) => {
     // res.send('readTodo controller hit after beign routed to /api/readtodo')
     const taskId = req.params.id;
     const taskBody = req.body;
+   
 
     try {
         // Edit the task that has been provided
-        const task = await todo.findById(taskId);
+        const task = await todoRepository.findOne({
+            where: { id: taskId}
+           })
+      
+
         if(task){
+            // Editing the current task if there has been any edits sent 
             task.title = taskBody.title? taskBody.title : task.title;
             task.description = taskBody.description? taskBody.description: task.description
             task.completed = taskBody.completed? taskBody.completed: task.completed
             
-            const updatedTodo = await task.save();
+            // To save the updated task into out DB and to send the response of updated task
+            const updatedTodo = await todoRepository.save(task);
             res.status(200).json(updatedTodo);
     
         }
@@ -101,13 +114,14 @@ const editOneTodo =  async (req, res, next) => {
 const deleteTodo =  async (req, res) => {
     // res.send('readTodo controller hit after beign routed to /api/readtodo')
     const taskId = req.params.id;
-    const task = await todo.findById(taskId)
+    const task = await todoRepository.findOne({where: {id: taskId}})
+
 
     if(task){
-        await todo.deleteOne({_id: taskId})
-        res.status(200).json(`Task '${task.title}' deleted succesfully `)
+        await todoRepository.remove(task);
+        res.status(200).json(`Task: '${task.title}' deleted succesfully `)
     }else{
-        res.status(404);
+        res.status(404).json({message: "ToDo not found"});
     }
 }
 

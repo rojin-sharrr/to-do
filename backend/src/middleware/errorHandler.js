@@ -9,6 +9,11 @@ const errorHandler = (err, req, res, next) => {
         statusCode = 400;
         message = 'Invalid ID format';
     }
+
+    if(err.message === 'null') {
+        statusCode = 400;
+        message = 'Invalid Id format';
+    }
  
     res.status(statusCode).json({
         message,
